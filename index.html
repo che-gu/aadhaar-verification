@@ -1,0 +1,251 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0' name='viewport' />
+    <title>Aadhaar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 18px;
+        }
+
+        body {
+            font-family: "Roboto", Helvetica, Calibri;
+        }
+
+            body.aadhaar #aadhaar-section, body.otp #otp-section {
+                display: block;
+            }
+
+            body.otp #aadhaar-section, body.aadhaar #otp-section {
+                display: none;
+            }
+
+        #content {
+            width: 100vw;
+            padding: 0.2rem 0;
+            position: absolute;
+            top: 38%;
+            text-align: center;
+            background-color: #ffffff;
+        }
+
+        #aadhaar-label, #otp-label {
+            width: 90%;
+            max-width: 500px;
+            margin: auto;
+            padding-left: 0.5rem;
+            text-align: start;
+            font-size: 0.8rem;
+            line-height: 1.5em;
+            color: #0e0e0e;
+        }
+
+        #aadhaar-input-box, #otp-input-box {
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            margin: auto;
+        }
+
+        #aadhaar-input, #otp-input {
+            width: 100%;
+            margin-top: 0.4rem;
+            max-width: 500px;
+            font-size: 1.4rem;
+            line-height: 1.3em;
+            padding: 0.5rem 0 0.5rem 0.5rem;
+            border: 1px solid #b0b0b0;
+            border-radius: 6px;
+            outline: none;
+            box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.1);
+            color: #0c0c0c;
+        }
+
+        #aadhaar-input-box.error #aadhaar-input, #otp-input-box.error #otp-input {
+            border-color: #a62639;
+        }
+
+        #aadhaar-input-box.error #aadhaar-error, #otp-input-box.error #otp-error {
+            display: block;
+        }
+
+        #aadhaar-error, #otp-error {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            color: #a62639;
+            border: 1px solid #a62639;
+            border-top-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            background-color: #fee9ec;
+            display: none;
+        }
+
+        #aadhaar-sub-text, #otp-sub-text {
+            margin-top: 0.7rem;
+            font-size: 0.7rem;
+            line-height: 1.3em;
+            color: #898989;
+        }
+
+    </style>
+
+</head>
+<body class="aadhaar">
+    <div id="content">
+        <div id="aadhaar-section">
+            <div id="aadhaar-label">
+                Your Aadhaar Number or Virtual ID
+            </div>
+            <div id="aadhaar-input-box">
+                <input placeholder="0000 0000 0000" id="aadhaar-input" type="tel" maxlength="14" onpaste="return false" onkeypress="return aadhaarKeyPressEvent(event)" onkeydown="aadhaarKeyDownEvent(event)"/>
+                <span id="aadhaar-error">
+                    Invalid
+                </span>
+            </div>
+            <div id="aadhaar-sub-text">
+                UIDAI will send an OTP to your Aadhaar linked mobile number
+            </div>
+        </div>
+        <div id="otp-section">
+            <div id="otp-label">
+                6-digit OTP sent to you
+            </div>
+            <div id="otp-input-box">
+                <input placeholder="000000" id="otp-input" type="tel" minlength="6" maxlength="6" onkeypress="return otpKeyPressEvent(event)" onkeydown="otpKeyDownEvent(event)"/>
+                <span id="otp-error">
+                    Invalid OTP
+                </span>
+            </div>
+            <div id="otp-sub-text">
+                UIDAI has sent an OTP to your Aadhaar linked mobile number
+            </div>
+        </div>
+    </div>
+    <script>
+        function aadhaarKeyDownEvent(event) {
+            if (document.getElementById("aadhaar-input").length != 0) {
+                document.getElementById("aadhaar-input-box").classList.remove("error");
+                document.getElementById("aadhaar-error").innerText = "Invalid";
+            }
+        }
+
+        function aadhaarKeyPressEvent(event) {
+            var position = event.target.selectionStart
+            var charCode = event.which || event.keyCode;
+
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+            if (position == 4 || position == 9) {
+                document.getElementById("aadhaar-input").value += " ";
+            }
+            
+            if (charCode == 13)
+                validateAadhaar();
+            return true;
+
+        }
+
+        function otpKeyDownEvent(event) {
+            if (!document.getElementById("otp-input").length != 0) {
+                document.getElementById("otp-input-box").classList.remove("error");
+                document.getElementById("otp-error").innerText = "Invalid";
+            }
+        }
+
+        function otpKeyPressEvent(event) {
+            
+            var charCode = event.which || event.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+            
+            if (charCode == 13)
+                validateOTP();
+            return true;
+        }
+
+
+        function changeAadhaarScreenLanguage(aadhaarLabelText, aadhaarSubText) {
+            document.getElementById("aadhaar-label").innerText = aadhaarLabelText;
+            document.getElementById("aadhaar-sub-text").innerText = aadhaarSubText;
+        }
+
+        function changeOTPScreenLanguage(aadhaarLabelText, aadhaarSubText) {
+            document.getElementById("otp-label").innerText = aadhaarLabelText;
+            document.getElementById("otp-sub-text").innerText = aadhaarSubText;
+        }
+
+        function validateAadhaar() {
+            var inputBox = document.getElementById("aadhaar-input-box");
+            var inputValue = document.getElementById("aadhaar-input").value;
+            var aadhaarRegex = /[0-9]{4}\s{1}[0-9]{4}\s{1}[0-9]{4}/;
+            if (inputValue.length == 0)
+                document.getElementById("aadhaar-error").innerText = "Required";
+            else {
+                inputBox.classList.remove("error");
+                document.getElementById("aadhaar-error").innerText = "Invalid";
+            }
+
+            if (inputValue.match(aadhaarRegex)) {
+                inputBox.classList.remove("error");
+                document.body.classList.remove("aadhaar");
+                document.body.classList.add("otp");
+                document.getElementById("otp-input").focus();
+            } else {
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.handler) {
+                    window.webkit.messageHandlers.handler.postMessage("aadhaarErrorOccured");
+                }
+
+                if (window.androidJSInterface) {
+                    document.getElementById("aadhaar-error").innerText = window.androidJSInterface.aadhaarErrorText();
+                }
+                inputBox.classList.add("error");
+            }
+        }
+
+        function validateOTP() {
+            var inputBox = document.getElementById("otp-input-box");
+            var inputValue = document.getElementById("otp-input").value;
+            var otpRegex = /[0-9]{6}/;
+
+            if (inputValue.length == 0)
+                document.getElementById("otp-error").innerText = "Required";
+            else
+                document.getElementById("otp-error").innerText = "Invalid";
+            if (inputValue.match(otpRegex)) {
+                inputBox.classList.remove("error");
+                inputBox.classList.add("success");
+            } else {
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.handler) {
+                    webkit.messageHandlers.handler.postMessage("otpErrorOccured");
+                }
+
+                if (window.androidJSInterface) {
+                    document.getElementById("otp-error").innerText = window.androidJSInterface.aadhaarErrorText();
+                }
+                inputBox.classList.add("error");
+            }
+        }
+
+        function changeAadhaarErrorText(errorText) {
+            document.getElementById("aadhaar-error").innerText = errorText;
+        }
+
+        function changeOtpErrorText(errorText) {
+            document.getElementById("otp-error").innerText = errorText;
+        }
+
+    </script>
+</body>
+
+</html>
