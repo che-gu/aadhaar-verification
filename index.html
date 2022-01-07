@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -46,6 +46,11 @@
             font-size: 0.8rem;
             line-height: 1.5em;
             color: #0e0e0e;
+            visibility: hidden;
+        }
+
+        #aadhaar-input::-webkit-input-placeholder, #otp-input::-webkit-input-placeholder {
+            font-size: 0.9rem;
         }
 
         #aadhaar-input-box, #otp-input-box {
@@ -75,6 +80,10 @@
 
         #aadhaar-input-box.error #aadhaar-error, #otp-input-box.error #otp-error {
             display: block;
+        }
+
+        #aadhaar-section.active #aadhaar-label, #otp-section.active #otp-label {
+            visibility : visible;
         }
 
         #aadhaar-error, #otp-error {
@@ -108,7 +117,7 @@
                 Your Aadhaar Number or Virtual ID
             </div>
             <div id="aadhaar-input-box">
-                <input placeholder="0000 0000 0000" id="aadhaar-input" type="tel" maxlength="14" onpaste="return false" onkeypress="return aadhaarKeyPressEvent(event)" onkeydown="aadhaarKeyDownEvent(event)"/>
+                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="14" onkeydown="aadhaarKeyDownEvent(event)" onkeyup="return aadhaarKeyPressEvent(event)" onpaste="arrangeAadhaarFormat(event)" onfocus="showLabel(this)"  onblur="arrangeAadhaarFormat()"/>
                 <span id="aadhaar-error">
                     Invalid
                 </span>
@@ -122,7 +131,7 @@
                 6-digit OTP sent to you
             </div>
             <div id="otp-input-box">
-                <input placeholder="000000" id="otp-input" type="tel" minlength="6" maxlength="6" onkeypress="return otpKeyPressEvent(event)" onkeydown="otpKeyDownEvent(event)"/>
+                <input placeholder="Enter the 6-digit OTP sent to you" id="otp-input" type="tel" minlength="6" maxlength="6" onpaste="arrangeOTPFormat(event)" onkeypress="return otpKeyPressEvent(event)" onkeyup="otpKeyUpEvent(this,event)" onfocus="showLabel(this)"/>
                 <span id="otp-error">
                     Invalid OTP
                 </span>
@@ -133,62 +142,121 @@
         </div>
     </div>
     <script>
-        function aadhaarKeyDownEvent(event) {
-            if (document.getElementById("aadhaar-input").length != 0) {
-                document.getElementById("aadhaar-input-box").classList.remove("error");
-                document.getElementById("aadhaar-error").innerText = "Invalid";
+        setInterval(networkCheck, 500);
+
+
+        function networkCheck() {
+            if (!navigator.onLine) {
+                console.log("Offline");
+                sendErrorMessage("networkError");
             }
         }
 
-        function aadhaarKeyPressEvent(event) {
-            var position = event.target.selectionStart
+        function showLabel(self) {
+            self.parentElement.parentElement.classList.add("active");
+            self.setAttribute("placeholder", "");
+        }
+
+        function aadhaarKeyDownEvent(event) {
+            var position = event.target.selectionStart;
             var charCode = event.which || event.keyCode;
 
             if (charCode > 31 && (charCode < 48 || charCode > 57))
                 return false;
-            if (position == 4 || position == 9) {
-                document.getElementById("aadhaar-input").value += " ";
+        }
+
+
+
+        function aadhaarKeyPressEvent(event) {
+            var position = event.target.selectionStart;
+            var charCode = event.which || event.keyCode;
+            var inputDataLength = document.getElementById("aadhaar-input").value.length;
+
+            if (charCode == 8 || charCode == 46 || (charCode >= 36 && charCode <= 40))
+                return false;
+
+            if (inputDataLength > 0 && event.which != 13) {
+                document.getElementById("aadhaar-input-box").classList.remove("error");
+                document.getElementById("aadhaar-error").innerText = "Invalid";
             }
-            
+
+            if (position != inputDataLength) {
+                arrangeAadhaarFormat();
+                event.target.selectionStart = position;
+                event.target.selectionEnd = position;
+            } else {
+                arrangeAadhaarFormat();
+            }
+
             if (charCode == 13)
                 validateAadhaar();
             return true;
 
         }
 
-        function otpKeyDownEvent(event) {
-            if (!document.getElementById("otp-input").length != 0) {
+        function otpKeyUpEvent(self, event) {
+            if (self.value.length > 0 && event.which != 13) {
                 document.getElementById("otp-input-box").classList.remove("error");
                 document.getElementById("otp-error").innerText = "Invalid";
             }
         }
 
         function otpKeyPressEvent(event) {
+            var position = event.target.selectionStart;
+
             
             var charCode = event.which || event.keyCode;
             if (charCode > 31 && (charCode < 48 || charCode > 57))
                 return false;
-            
+
             if (charCode == 13)
                 validateOTP();
             return true;
         }
-
 
         function changeAadhaarScreenLanguage(aadhaarLabelText, aadhaarSubText) {
             document.getElementById("aadhaar-label").innerText = aadhaarLabelText;
             document.getElementById("aadhaar-sub-text").innerText = aadhaarSubText;
         }
 
-        function changeOTPScreenLanguage(aadhaarLabelText, aadhaarSubText) {
+        function changeOtpScreenLanguage(aadhaarLabelText, aadhaarSubText) {
             document.getElementById("otp-label").innerText = aadhaarLabelText;
             document.getElementById("otp-sub-text").innerText = aadhaarSubText;
         }
 
+        function arrangeAadhaarFormat(event) {
+            var inputData;
+            var modifiedData = "";
+
+            if (event) {
+                event.preventDefault();
+                inputData = event.clipboardData.getData("Text");
+            } else {
+                inputData = document.getElementById("aadhaar-input").value;;
+            }
+            var inputValue = inputData.replace(/[^\d]/g, "").slice(0, 12);
+            if (inputValue.length <= 3) {
+                modifiedData = inputValue;
+            }
+            else if (inputValue.length > 3 && inputValue.length <= 7) {
+                modifiedData = inputValue.substring(0, 4) + " " + inputValue.substring(4, 8);
+            }
+            else if (inputValue.length > 7) {
+                modifiedData = inputValue.substring(0, 4) + " " + inputValue.substring(4, 8) + " " + inputValue.substring(8);
+            }
+            document.getElementById("aadhaar-input").value = modifiedData;
+        }
+
+        function arrangeOTPFormat(event) {
+            event.preventDefault();
+            document.getElementById("otp-input").value = event.clipboardData.getData("Text").replace(/[^\d]/g, "").slice(0, 6);
+        }
+
         function validateAadhaar() {
+            arrangeAadhaarFormat();
             var inputBox = document.getElementById("aadhaar-input-box");
             var inputValue = document.getElementById("aadhaar-input").value;
-            var aadhaarRegex = /[0-9]{4}\s{1}[0-9]{4}\s{1}[0-9]{4}/;
+            var aadhaarRegex = /[0-9]{4}(\s{1})?[0-9]{4}(\s{1})?[0-9]{4}/;
             if (inputValue.length == 0)
                 document.getElementById("aadhaar-error").innerText = "Required";
             else {
@@ -196,26 +264,63 @@
                 document.getElementById("aadhaar-error").innerText = "Invalid";
             }
 
-            if (inputValue.match(aadhaarRegex)) {
+            if (inputValue.match(aadhaarRegex) && verhoeffAlgorithmCheck(inputValue.replace(/[^\d]/g, ""))) {
                 inputBox.classList.remove("error");
                 document.body.classList.remove("aadhaar");
                 document.body.classList.add("otp");
-                document.getElementById("otp-input").focus();
             } else {
-                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.handler) {
-                    window.webkit.messageHandlers.handler.postMessage("aadhaarErrorOccured");
-                }
-
-                if (window.androidJSInterface) {
-                    document.getElementById("aadhaar-error").innerText = window.androidJSInterface.aadhaarErrorText();
-                }
                 inputBox.classList.add("error");
+                sendErrorMessage("aadhaarErrorOccured");
             }
+        }
+
+        function sendErrorMessage(errorMessage) {
+            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.handler) {
+                window.webkit.messageHandlers.handler.postMessage(errorMessage);
+            }
+
+            if (window.androidJSInterface) {
+                window.androidJSInterface.handleFunction(errorMessage);
+            }
+        }
+
+        function verhoeffAlgorithmCheck(aadharNumber) {
+            var d = [
+                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                [1, 2, 3, 4, 0, 6, 7, 8, 9, 5],
+                [2, 3, 4, 0, 1, 7, 8, 9, 5, 6],
+                [3, 4, 0, 1, 2, 8, 9, 5, 6, 7],
+                [4, 0, 1, 2, 3, 9, 5, 6, 7, 8],
+                [5, 9, 8, 7, 6, 0, 4, 3, 2, 1],
+                [6, 5, 9, 8, 7, 1, 0, 4, 3, 2],
+                [7, 6, 5, 9, 8, 2, 1, 0, 4, 3],
+                [8, 7, 6, 5, 9, 3, 2, 1, 0, 4],
+                [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+            ]
+            var p = [
+                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                [1, 5, 7, 6, 2, 8, 3, 0, 9, 4],
+                [5, 8, 0, 3, 7, 9, 6, 1, 4, 2],
+                [8, 9, 1, 6, 0, 4, 3, 5, 2, 7],
+                [9, 4, 5, 3, 1, 2, 6, 8, 7, 0],
+                [4, 2, 8, 6, 5, 7, 3, 9, 0, 1],
+                [2, 7, 9, 3, 8, 0, 6, 4, 1, 5],
+                [7, 0, 4, 6, 9, 1, 3, 2, 5, 8]
+            ]
+
+            var c = 0
+            var invertedArray = aadharNumber.split('').map(Number).reverse()
+
+            invertedArray.forEach((val, i) => {
+                c = d[c][p[(i % 8)][val]]
+            })
+
+            return (c === 0)
         }
 
         function validateOTP() {
             var inputBox = document.getElementById("otp-input-box");
-            var inputValue = document.getElementById("otp-input").value;
+            var inputValue = document.getElementById("otp-input").value.replace(/[^\d]/g, "");
             var otpRegex = /[0-9]{6}/;
 
             if (inputValue.length == 0)
@@ -244,6 +349,15 @@
         function changeOtpErrorText(errorText) {
             document.getElementById("otp-error").innerText = errorText;
         }
+
+        function submitData() {
+            var bodyClassList = document.body.classList;
+            if (bodyClassList.contains("aadhaar"))
+                validateAadhaar();
+            else if (bodyClassList.contains("otp"))
+                validateOTP();
+        }
+
 
     </script>
 </body>
