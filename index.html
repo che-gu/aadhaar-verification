@@ -224,13 +224,13 @@
             var inputData;
             var modifiedData = "";
             var arrayValues = [];
+            //Removing all the unwanted characters after entering as keyup event works only after entering the value (Used keyup as we cant get any text in input field to reformat if we use keydown)
+            inputData = document.getElementById("aadhaar-input").value.replace(/[^\d]/g, "");
 
             if (event) {
                 event.preventDefault();
-                inputData = event.clipboardData.getData("Text").replace(/[^\d]/g, "").slice(0, 12);
-            } else {
-                //Replacing all the unwanted characters after entering as keyup event works only after entering the value (Used keyup as we cant get any text in input field to reformat if we use keydown)
-                inputData = document.getElementById("aadhaar-input").value.replace(/[^\d]/g, "");
+                //Adding pasted text taken from clip board to already present text and slicing that to first 12 characters
+                inputData = (inputData + event.clipboardData.getData("Text").replace(/[^\d]/g, "")).slice(0,12);
             }
 
             //Pushing aadhaar as 4-4-4 substrings into an array and merging them with space
