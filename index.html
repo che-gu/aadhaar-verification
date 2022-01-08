@@ -131,7 +131,7 @@
                 6-digit OTP sent to you
             </div>
             <div id="otp-input-box">
-                <input placeholder="Enter the 6-digit OTP sent to you" id="otp-input" type="tel" minlength="6" maxlength="6" onkeyup="otpKeyUpEvent(this,event)" onpaste="arrangeOTPFormat(event)" onfocus="showLabel(this)"/>
+                <input placeholder="Enter the 6-digit OTP sent to you" id="otp-input" type="tel" minlength="6" maxlength="6" onkeyup="otpKeyPressEvent(this,event)" onpaste="arrangeOTPFormat(event)" onfocus="showLabel(this)"/>
                 <span id="otp-error">
                     Invalid OTP
                 </span>
@@ -317,7 +317,9 @@
         }
 
         //OTP Input Feild Key Press Event Function
-        function otpKeyUpEvent(self, event) {
+        function otpKeyPressEvent(self, event) {
+            //Replacing all the unwanted characters as we can't restrict them with keyup event
+            self.value = self.value.replace(/[^\d]/g, "")
             var charCode = event.which || event.keyCode;
             if (charCode == 13) {
                 validateOTP();
