@@ -117,7 +117,7 @@
                 Your Aadhaar Number or Virtual ID
             </div>
             <div id="aadhaar-input-box">
-                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="14" onkeyup="aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(event)" onfocus="showLabel(this)"/>
+                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="19" onkeyup="aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(event)" onfocus="showLabel(this)"/>
                 <span id="aadhaar-error">
                     Invalid
                 </span>
@@ -146,7 +146,7 @@
         setInterval(function () {
             if (!navigator.onLine) {
                 console.log("Offline");
-                sendErrorMessage("BP-100");
+                sendErrorMessage("BP-100"); //Bank Page Error - 100 (For Network Error Message)
             }
         }, 500);
 
@@ -229,12 +229,12 @@
 
             if (event) {
                 event.preventDefault();
-                //Adding pasted text taken from clip board to already present text and slicing that to first 12 characters
-                inputData = (inputData + event.clipboardData.getData("Text").replace(/[^\d]/g, "")).slice(0,12);
+                //Adding pasted text taken from clip board to already present text and slicing that to first 16 characters
+                inputData = (inputData + event.clipboardData.getData("Text").replace(/[^\d]/g, "")).slice(0,16);
             }
 
             //Pushing aadhaar as 4-4-4 substrings into an array and merging them with space
-            arrayValues.push(inputData.substring(0, 4), inputData.substring(4, 8), inputData.substring(8,12));
+            arrayValues.push(inputData.substring(0, 4), inputData.substring(4, 8), inputData.substring(8,12), inputData.substring(12,16));
             modifiedData = arrayValues.join(" ").trim();
 
             document.getElementById("aadhaar-input").value = modifiedData;
@@ -247,7 +247,7 @@
             var inputBox = document.getElementById("aadhaar-input-box");
             var inputValue = document.getElementById("aadhaar-input").value.replaceAll(" ", "");
 
-            if (inputValue.match(/[0-9]{12}/) && verhoeffAlgorithmCheck(inputValue)) {
+            if (inputValue.match(/[0-9]{16}/) && verhoeffAlgorithmCheck(inputValue)) {
                 inputBox.classList.remove("error");
                 document.body.classList.remove("aadhaar");
                 document.body.classList.add("otp");
