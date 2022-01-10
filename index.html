@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=5.0' name='viewport' />
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport' />
     <title>Aadhaar</title>
     <style>
         * {
@@ -247,7 +247,7 @@
             var inputBox = document.getElementById("aadhaar-input-box");
             var inputValue = document.getElementById("aadhaar-input").value.replaceAll(" ", "");
 
-            if (inputValue.match(/[0-9]{16}/) && verhoeffAlgorithmCheck(inputValue)) {
+            if (inputValue.match(/\d{12}(\d{4})?/) && verhoeffAlgorithmCheck(inputValue)) {
                 inputBox.classList.remove("error");
                 document.body.classList.remove("aadhaar");
                 document.body.classList.add("otp");
@@ -336,7 +336,7 @@
         function validateOTP() {
             var inputBox = document.getElementById("otp-input-box");
             var inputValue = document.getElementById("otp-input").value;
-            var otpRegex = /[0-9]{6}/;
+            var otpRegex = /\d{6}/;
 
             if (inputValue.match(otpRegex)) {
                 inputBox.classList.remove("error");
