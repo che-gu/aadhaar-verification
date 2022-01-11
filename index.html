@@ -210,7 +210,7 @@
             if (charCode != 8) {
                 event.preventDefault();
                 setTimeout(function () {
-                    document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.replace(/[^ ]/g, "");
+                    document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.slice(0,-1);
                 }, 2);
             }
 
@@ -345,7 +345,7 @@
 
             setTimeout(function () {
                 if (charCode < 48 || charCode > 57) {
-                    document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.replace(/[^\d ]/g, "");
+                    document.getElementById("otp-input").value = document.getElementById("otp-input").value.substring(0,self.value.length-1);
                 }
             }, 20);
 
