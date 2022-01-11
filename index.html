@@ -106,7 +106,6 @@
             line-height: 1.3em;
             color: #898989;
         }
-
     </style>
 
 </head>
@@ -117,7 +116,7 @@
                 Your Aadhaar Number or Virtual ID
             </div>
             <div id="aadhaar-input-box">
-                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="19" onkeydown="return aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(value,event)" onfocus="showLabel(this)"/>
+                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="19" onkeydown="return aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(value,event)" onfocus="showLabel(this)" />
                 <span id="aadhaar-error">
                     Invalid
                 </span>
@@ -131,7 +130,7 @@
                 6-digit OTP sent to you
             </div>
             <div id="otp-input-box">
-                <input placeholder="Enter the 6-digit OTP sent to you" id="otp-input" type="tel" minlength="6" maxlength="6" onkeydown="return otpKeyPressEvent(this,event)" onpaste="arrangeOTPFormat(event)" onfocus="showLabel(this)"/>
+                <input placeholder="Enter the 6-digit OTP sent to you" id="otp-input" type="tel" minlength="6" maxlength="6" onkeydown="return otpKeyPressEvent(this,event)" onpaste="arrangeOTPFormat(event)" onfocus="showLabel(this)" />
                 <span id="otp-error">
                     Invalid OTP
                 </span>
@@ -185,7 +184,7 @@
 
         //----Aadhaar Screen Functions----
 
-        //Change aadhaar screen language 
+        //Change aadhaar screen language
         function changeAadhaarScreenLanguage(aadhaarLabelText, aadhaarSubText) {
             document.getElementById("aadhaar-label").innerText = aadhaarLabelText;
             document.getElementById("aadhaar-sub-text").innerText = aadhaarSubText;
@@ -196,25 +195,28 @@
             var checkValue = self.value;
             var position = event.target.selectionStart;
             var charCode = event.which || event.keyCode;
-            var charValue = charCode - 48;
             var inputDataLength = self.value.length;
+            var charValue = charCode - 48;
+            checkValue = checkValue.slice(0, position) + charValue + checkValue.slice(position);
 
             if (charCode == 13) {
                 validateAadhaar();
                 return false;
             }
-            if (charCode> 31 && (charCode < 48 || charCode > 57)) {
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
                 return false;
             }
 
-            if (inputDataLength < 19 && charCode!=18) {
+            if (charCode != 8) {
                 event.preventDefault();
-                arrangeAadhaarFormat(checkValue.slice(0, position) + charValue + checkValue.slice(position));
+            }
+
+            if (charValue >= 0 && charValue <= 9 && inputDataLength < 19) {
+                arrangeAadhaarFormat(checkValue);
                 setTimeout(function () {
-                    if (!(charCode > 48 && charCode < 57)) {
-                        document.getElementById("aadhaar-input").value= document.getElementById("aadhaar-input").value.slice(-1);
-                    }
-                },2)
+                    if (!(charCode >= 48 && charCode <= 57))
+                        document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.slice(0, -1);
+                }, 2);
             }
 
             //Positioning cursor to right palce after re-formatting
@@ -245,10 +247,10 @@
                 inputData = checkValue.replace(/[^\d]/g, "");
             }
             //Pushing aadhaar as 4-4-4-4 substrings into an array and merging them with space
-            arrayValues.push(inputData.substring(0, 4), inputData.substring(4, 8), inputData.substring(8,12), inputData.substring(12,16));
+            arrayValues.push(inputData.substring(0, 4), inputData.substring(4, 8), inputData.substring(8, 12), inputData.substring(12, 16));
             modifiedData = arrayValues.join(" ").trim();
 
-            document.getElementById("aadhaar-input").value = modifiedData; 
+            document.getElementById("aadhaar-input").value = modifiedData;
         }
 
         //Aadhaar Number Validation Function
@@ -313,7 +315,7 @@
 
         //----OTP Screen Functions----
 
-        //Change OTP screen language 
+        //Change OTP screen language
         function changeOtpScreenLanguage(aadhaarLabelText, aadhaarSubText) {
             document.getElementById("otp-label").innerText = aadhaarLabelText;
             document.getElementById("otp-sub-text").innerText = aadhaarSubText;
@@ -339,10 +341,17 @@
                 return false;
             }
 
+            setTimeout(function () {
+                if (!(charCode >= 48 && charCode <= 57))
+                    document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.slice(0, -1);
+            }, 2);
+
             if (self.value.length > 0 || charCode != 13) {
                 document.getElementById("otp-input-box").classList.remove("error");
                 document.getElementById("otp-error").innerText = "Invalid";
             }
+
+
 
             return true;
         }
@@ -365,7 +374,7 @@
                 else
                     document.getElementById("otp-error").innerText = "Invalid";
 
-                inputBox.classList.add("error"); 
+                inputBox.classList.add("error");
             }
         }
 
