@@ -206,7 +206,6 @@
 
             if (charCode > 57) {
                 event.preventDefault();
-                return false;
             }
 
             if (charValue >= 0 && charValue <= 9 && inputDataLength < 19) {
@@ -333,7 +332,6 @@
 
             if (charCode > 57) {
                 event.preventDefault();
-                return false;
             }
 
             if (self.value.length > 0 || charCode != 13) {
