@@ -204,7 +204,7 @@
                 return false;
             }
 
-            if ((charCode <= 48 || charCode >= 57) && charCode != 18) {
+            if ((charCode < 48 || charCode > 57) || charCode != 18) {
                 
                 return false;
             }
@@ -330,8 +330,8 @@
                 return false;
             }
 
-            if ((charCode <= 48 || charCode >= 57) && charCode != 18) {
-event.preventDefault();
+            if ((charCode < 48 || charCode > 57) || charCode != 18) {
+                event.preventDefault();
                 return false;
             }
 
