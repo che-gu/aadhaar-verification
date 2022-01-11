@@ -353,7 +353,7 @@
                     if (charCode < 48 || charCode > 57) {
                         document.getElementById("otp-input").value = document.getElementById("otp-input").value.substring(0,self.value.length-1);
                     }
-                }, 20);
+                }, 500);
 
                 if (self.value.length > 0 || charCode != 13) {
                     document.getElementById("otp-input-box").classList.remove("error");
