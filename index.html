@@ -204,8 +204,8 @@
                 return false;
             }
 
-            if (charCode > 57) {
-                event.preventDefault();
+            if (charCode >= 48 && charCode <= 57 && charCode!=18) {
+                return false;
             }
 
             if (charValue >= 0 && charValue <= 9 && inputDataLength < 19) {
@@ -238,7 +238,7 @@
                 //Adding pasted text taken from clip board to already present text and slicing that to first 16 characters
                 inputData = (inputData + event.clipboardData.getData("Text").replace(/[^\d]/g, "")).slice(0, 16);
             } else {
-                inputData = checkValue.replaceAll(" ", "");
+                inputData = checkValue.replace(/[^\d]/g, "");
             }
             //Pushing aadhaar as 4-4-4-4 substrings into an array and merging them with space
             arrayValues.push(inputData.substring(0, 4), inputData.substring(4, 8), inputData.substring(8,12), inputData.substring(12,16));
@@ -332,6 +332,7 @@
 
             if (charCode > 57) {
                 event.preventDefault();
+                return false;
             }
 
             if (self.value.length > 0 || charCode != 13) {
