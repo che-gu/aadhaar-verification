@@ -117,7 +117,7 @@
                 Your Aadhaar Number or Virtual ID
             </div>
             <div id="aadhaar-input-box">
-                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="19" onkeydown="return aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(value,event)" onfocus="showLabel(this)"/>
+                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="19" onkeypress="return aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(value,event)" onfocus="showLabel(this)"/>
                 <span id="aadhaar-error">
                     Invalid
                 </span>
