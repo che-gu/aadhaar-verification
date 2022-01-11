@@ -198,7 +198,6 @@
             var charCode = event.which || event.keyCode;
             var charValue = charCode - 48;
             var inputDataLength = self.value.length;
-
             if (charCode == 13) {
                 validateAadhaar();
                 return false;
@@ -211,8 +210,11 @@
                 event.preventDefault();
             }
 
-            if (inputDataLength < 19 ) {
-                arrangeAadhaarFormat(checkValue.slice(0, position) + charValue + checkValue.slice(position));
+            if (inputDataLength < 19) {
+                if (charValue >= 0 && charValue <= 9)
+                    checkValue = checkValue.slice(0, position) + charValue + checkValue.slice(position);
+
+                arrangeAadhaarFormat(checkValue);
             }
 
             //Positioning cursor to right palce after re-formatting
