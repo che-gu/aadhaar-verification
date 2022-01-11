@@ -204,10 +204,11 @@
                 return false;
             }
 
-            if (charCode <= 48 && charCode >= 57 && charCode != 18 ) {
+            if (charCode <= 48 && charCode >= 57 && charCode != 18) {
+                
                 return false;
             }
-
+            alert(charCode);
             if (charValue >= 0 && charValue <= 9 && inputDataLength < 19) {
                 event.preventDefault();
                 arrangeAadhaarFormat(checkValue.slice(0, position) + charValue + checkValue.slice(position));
