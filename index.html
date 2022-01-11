@@ -149,10 +149,6 @@
                 }
             }, 500);
 
-            setInterval(function () {
-                document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.replace(/[^\d ]/g, "");
-            }, 500);
-
             //Show Label on input field focus function
             function showLabel(self) {
                 self.parentElement.parentElement.classList.add("active");
@@ -207,17 +203,18 @@
                     validateAadhaar();
                     return false;
                 }
+                setTimeout(function () {
+                    if (charCode < 48 || charCode > 57) {
+                        document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.replace(/[^\d ]/g, "");
+                    }
+                }, 2);
                 if (charCode > 31 && (charCode < 48 || charCode > 57)) {
                     return false;
                 }
 
                 if (charCode != 8) {
                     event.preventDefault();
-                    setTimeout(function () {
-                        if (charCode < 48 || charCode > 57) {
-                            document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.substring(0, inputDataLength);
-                        }
-                    }, 2);
+                    
                 }
 
                 if (charValue >= 0 && charValue <= 9 && inputDataLength < 19) {
@@ -344,16 +341,18 @@
                     return false;
                 }
 
+                setTimeout(function () {
+                    if (charCode < 48 || charCode > 57) {
+                        document.getElementById("otp-input").value = document.getElementById("otp-input").value.substring(0, self.value.length - 1);
+                    }
+                }, 2);
+
                 if (charCode > 31 && (charCode < 48 || charCode > 57)) {
                     event.preventDefault();
                     return false;
                 }
 
-                setTimeout(function () {
-                    if (charCode < 48 || charCode > 57) {
-                        document.getElementById("otp-input").value = document.getElementById("otp-input").value.substring(0,self.value.length-1);
-                    }
-                }, 500);
+                
 
                 if (self.value.length > 0 || charCode != 13) {
                     document.getElementById("otp-input-box").classList.remove("error");
