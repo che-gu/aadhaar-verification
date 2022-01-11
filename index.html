@@ -210,7 +210,9 @@
             if (charCode != 8) {
                 event.preventDefault();
                 setTimeout(function () {
-                    document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.slice(0,-1);
+                    if (charCode < 48 || charCode > 57) {
+                        document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.substring(0, inputDataLength);
+                    }
                 }, 2);
             }
 
