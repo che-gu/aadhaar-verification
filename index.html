@@ -209,15 +209,19 @@
 
             if (charCode != 8) {
                 event.preventDefault();
+                setTimeout(function () {
+                    if (charCode < 48 || charCode > 57) {
+                        document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.replace(/[^\d ]/g, "");
+                    }
+                }, 2);
             }
 
             if (charValue >= 0 && charValue <= 9 && inputDataLength < 19) {
                 arrangeAadhaarFormat(checkValue);
-                setTimeout(function () {
-                    if (!(charCode >= 48 && charCode <= 57))
-                        document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.slice(0, -1);
-                }, 2);
+                
             }
+
+            
 
             //Positioning cursor to right palce after re-formatting
             if (position != inputDataLength) {
@@ -342,8 +346,9 @@
             }
 
             setTimeout(function () {
-                if (!(charCode >= 48 && charCode <= 57))
-                    document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.slice(0, -1);
+                if (charCode < 48 || charCode > 57) {
+                    document.getElementById("aadhaar-input").value = document.getElementById("aadhaar-input").value.replace(/[^\d ]/g, "");
+                }
             }, 2);
 
             if (self.value.length > 0 || charCode != 13) {
