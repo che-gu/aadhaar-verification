@@ -196,7 +196,6 @@
             var checkValue = self.value;
             var position = event.target.selectionStart;
             var charCode = event.which || event.keyCode;
-            var charValue = charCode - 48;
             var inputDataLength = self.value.length;
             if (charCode == 13) {
                 validateAadhaar();
@@ -212,7 +211,7 @@
 
             if (inputDataLength < 19) {
                 if (charValue >= 0 && charValue <= 9)
-                    checkValue = checkValue.slice(0, position) + charValue + checkValue.slice(position);
+                    checkValue = checkValue.slice(0, position) + (charCode-48) + checkValue.slice(position);
 
                 arrangeAadhaarFormat(checkValue);
             }
