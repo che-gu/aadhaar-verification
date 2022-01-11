@@ -204,8 +204,8 @@
                 return false;
             }
 
-            if (charCode <= 48 && charCode >= 57 && charCode != 18) {
-                event.preventDefault();
+            if ((charCode <= 48 || charCode >= 57) && charCode != 18) {
+                
                 return false;
             }
             if (charValue >= 0 && charValue <= 9 && inputDataLength < 19) {
@@ -330,7 +330,8 @@
                 return false;
             }
 
-            if (charCode <= 48 && charCode >= 57 && charCode != 18) {
+            if ((charCode <= 48 || charCode >= 57) && charCode != 18) {
+
                 return false;
             }
 
