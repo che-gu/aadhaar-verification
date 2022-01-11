@@ -205,10 +205,9 @@
             }
 
             if (charCode <= 48 && charCode >= 57 && charCode != 18) {
-                
+                event.preventDefault();
                 return false;
             }
-
             if (charValue >= 0 && charValue <= 9 && inputDataLength < 19) {
                 event.preventDefault();
                 arrangeAadhaarFormat(checkValue.slice(0, position) + charValue + checkValue.slice(position));
