@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport' />
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0' name='viewport' />
     <title>Aadhaar</title>
     <style>
         * {
@@ -117,7 +117,7 @@
                 Your Aadhaar Number or Virtual ID
             </div>
             <div id="aadhaar-input-box">
-                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="19" onkeyup="aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(event)" onfocus="showLabel(this)"/>
+                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="19" onkeydown="return aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(value,event)" onfocus="showLabel(this)"/>
                 <span id="aadhaar-error">
                     Invalid
                 </span>
@@ -131,7 +131,7 @@
                 6-digit OTP sent to you
             </div>
             <div id="otp-input-box">
-                <input placeholder="Enter the 6-digit OTP sent to you" id="otp-input" type="tel" minlength="6" maxlength="6" onkeyup="otpKeyPressEvent(this,event)" onpaste="arrangeOTPFormat(event)" onfocus="showLabel(this)"/>
+                <input placeholder="Enter the 6-digit OTP sent to you" id="otp-input" type="tel" minlength="6" maxlength="6" onkeydown="return otpKeyPressEvent(this,event)" onpaste="arrangeOTPFormat(event)" onfocus="showLabel(this)"/>
                 <span id="otp-error">
                     Invalid OTP
                 </span>
@@ -145,8 +145,8 @@
         //Network Check for every half second
         setInterval(function () {
             if (!navigator.onLine) {
-                console.log("Offline");
-                sendErrorMessage("BP-100"); //Bank Page Error - 100 (For Network Error Message)
+                console.log("Network Error");
+                sendErrorMessage("BPE-500"); //Bank Page Error - 500 (For Network Error Message)
             }
         }, 500);
 
@@ -192,9 +192,11 @@
         }
 
         //Aadhaar Screen Input Feild Key Press Event Function
-        function aadhaarKeyPressEvent(self,event) {
+        function aadhaarKeyPressEvent(self, event) {
+            var checkValue = self.value;
             var position = event.target.selectionStart;
             var charCode = event.which || event.keyCode;
+            var charValue = charCode - 48;
             var inputDataLength = self.value.length;
 
             if (charCode == 13) {
@@ -202,48 +204,51 @@
                 return false;
             }
 
-            //Change Default Error Text after if input field is not empty
-            if (inputDataLength > 0) {
-                document.getElementById("aadhaar-input-box").classList.remove("error");
-                document.getElementById("aadhaar-error").innerText = "Invalid";
+            if (charCode > 57) {
+                return false;
             }
 
-            //Formating Input Field
-            arrangeAadhaarFormat();
+            if (charValue >= 0 && charValue <= 9 && inputDataLength < 19) {
+                event.preventDefault();
+                arrangeAadhaarFormat(checkValue.slice(0, position) + charValue + checkValue.slice(position));
+            }
 
             //Positioning cursor to right palce after re-formatting
             if (position != inputDataLength) {
                 event.target.selectionStart = position;
                 event.target.selectionEnd = position;
             }
+            //Change Default Error Text after if input field is not empty
+            if (inputDataLength > 0 || charCode != 13) {
+                document.getElementById("aadhaar-input-box").classList.remove("error");
+                document.getElementById("aadhaar-error").innerText = "Invalid";
+            }
 
+            return true;
         }
 
         //Formating Aadhaar number
-        function arrangeAadhaarFormat(event) {
+        function arrangeAadhaarFormat(checkValue, event) {
             var inputData;
             var modifiedData = "";
             var arrayValues = [];
-            //Removing all the unwanted characters after entering as keyup event works only after entering the value (Used keyup as we cant get any text in input field to reformat if we use keydown)
-            inputData = document.getElementById("aadhaar-input").value.replace(/[^\d]/g, "");
 
             if (event) {
                 event.preventDefault();
                 //Adding pasted text taken from clip board to already present text and slicing that to first 16 characters
-                inputData = (inputData + event.clipboardData.getData("Text").replace(/[^\d]/g, "")).slice(0,16);
+                inputData = (inputData + event.clipboardData.getData("Text").replace(/[^\d]/g, "")).slice(0, 16);
+            } else {
+                inputData = checkValue.replaceAll(" ", "");
             }
-
-            //Pushing aadhaar as 4-4-4 substrings into an array and merging them with space
+            //Pushing aadhaar as 4-4-4-4 substrings into an array and merging them with space
             arrayValues.push(inputData.substring(0, 4), inputData.substring(4, 8), inputData.substring(8,12), inputData.substring(12,16));
             modifiedData = arrayValues.join(" ").trim();
 
-            document.getElementById("aadhaar-input").value = modifiedData;
+            document.getElementById("aadhaar-input").value = modifiedData; 
         }
 
         //Aadhaar Number Validation Function
         function validateAadhaar() {
-            //Formating Input Field
-            arrangeAadhaarFormat();
             var inputBox = document.getElementById("aadhaar-input-box");
             var inputValue = document.getElementById("aadhaar-input").value.replaceAll(" ", "");
 
@@ -319,17 +324,22 @@
         //OTP Input Feild Key Press Event Function
         function otpKeyPressEvent(self, event) {
             //Replacing all the unwanted characters as we can't restrict them with keyup event
-            self.value = self.value.replace(/[^\d]/g, "")
             var charCode = event.which || event.keyCode;
             if (charCode == 13) {
                 validateOTP();
                 return false;
             }
 
-            if (self.value.length > 0 ) {
+            if (charCode > 57) {
+                return false;
+            }
+
+            if (self.value.length > 0 || charCode != 13) {
                 document.getElementById("otp-input-box").classList.remove("error");
                 document.getElementById("otp-error").innerText = "Invalid";
             }
+
+            return true;
         }
 
         //OTP Validation Function
