@@ -343,7 +343,7 @@
 
                 setTimeout(function () {
                     if (charCode < 48 || charCode > 57) {
-                        document.getElementById("otp-input").value = document.getElementById("otp-input").value.substring(0, self.value.length - 1);
+                        document.getElementById("otp-input").value = document.getElementById("otp-input").value.replace(/[^\d ]/g, "");
                     }
                 }, 2);
 
