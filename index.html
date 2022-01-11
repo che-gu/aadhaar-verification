@@ -117,7 +117,7 @@
                 Your Aadhaar Number or Virtual ID
             </div>
             <div id="aadhaar-input-box">
-                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="19" onkeypress="return aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(value,event)" onfocus="showLabel(this)"/>
+                <input placeholder="Enter your Aadhaar Number or Virtual ID" id="aadhaar-input" type="tel" maxlength="19" onkeydown="return aadhaarKeyPressEvent(this,event)" onpaste="arrangeAadhaarFormat(value,event)" onfocus="showLabel(this)"/>
                 <span id="aadhaar-error">
                     Invalid
                 </span>
@@ -196,7 +196,9 @@
             var checkValue = self.value;
             var position = event.target.selectionStart;
             var charCode = event.which || event.keyCode;
+            var charValue = charCode - 48;
             var inputDataLength = self.value.length;
+
             if (charCode == 13) {
                 validateAadhaar();
                 return false;
@@ -205,15 +207,14 @@
                 return false;
             }
 
-            if (charCode != 18) {
+            if (inputDataLength < 19 && charCode!=18) {
                 event.preventDefault();
-            }
-
-            if (inputDataLength < 19) {
-                if (charValue >= 0 && charValue <= 9)
-                    checkValue = checkValue.slice(0, position) + (charCode-48) + checkValue.slice(position);
-
-                arrangeAadhaarFormat(checkValue);
+                arrangeAadhaarFormat(checkValue.slice(0, position) + charValue + checkValue.slice(position));
+                setTimeout(function () {
+                    if (!(charCode > 48 && charCode < 57)) {
+                        document.getElementById("aadhaar-input").value= document.getElementById("aadhaar-input").value.slice(-1);
+                    }
+                },2)
             }
 
             //Positioning cursor to right palce after re-formatting
